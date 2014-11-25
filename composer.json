@@ -1,0 +1,20 @@
+{
+    "name": "p33rs/cram",
+    "type": "project",
+    "description": "Photo sharing site",
+    "license": "GPL-3.0",
+    "version": "0.1.0",
+    "authors": [
+        {
+            "name": "Jon Pierce",
+            "email": "hello@jonpierce.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "unionofrad/lithium": "1.0-beta"
+    },
+    "config" : {
+        "component-dir": "vendor"
+    }
+}
