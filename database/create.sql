@@ -1,0 +1,64 @@
+SET FOREIGN_KEY_CHECKS = 0;
+CREATE SCHEMA IF NOT EXISTS `cram`;
+USE `cram`;
+
+DROP TABLE IF EXISTS `cram`.`users`;
+CREATE TABLE `cram`.`users` (
+  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `username` VARCHAR(16) NOT NULL DEFAULT '' ,
+  `firstname` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `lastname` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `email` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `hash` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `salt` VARCHAR(255) NOT NULL DEFAULT '' ,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `cram`.`photos`;
+CREATE TABLE `cram`.`photos` (
+  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `filename` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `datetime` DATETIME NOT NULL ,
+  `caption` TEXT NOT NULL ,
+  `user` SMALLINT(5) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS `cram`.`comments`;
+CREATE TABLE `cram`.`comments` (
+  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `text` TEXT NOT NULL ,
+  `datetime` DATETIME NOT NULL ,
+  `photo` SMALLINT(5) UNSIGNED NOT NULL ,
+  `user` SMALLINT(5) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`photo`) REFERENCES `photos`(`id`) ON DELETE CASCADE ,
+  FOREIGN KEY (`user`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
+# we'll see.
+
+DROP TABLE IF EXISTS `cram`.`follows`;
+CREATE TABLE `cram`.`follows` (
+  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `from` SMALLINT(5) UNSIGNED NOT NULL ,
+  `to` SMALLINT(5) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `follow` (`from`, `to`),
+  FOREIGN KEY (`from`) REFERENCES `user`(`id`) ON DELETE CASCADE ,
+  FOREIGN KEY (`to`) REFERENCES `user`(`id`) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS `cram`.`likes`;
+CREATE TABLE `cram`.`likes` (
+  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `photo` SMALLINT(5) UNSIGNED NOT NULL ,
+  `user` SMALLINT(5) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  UNIQUE KEY `like` (`photo`, `user`),
+  FOREIGN KEY (`photo`) REFERENCES `photos`(`id`) ON DELETE CASCADE ,
+  FOREIGN KEY (`user`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
+SET FOREIGN_KEY_CHECKS = 1;
