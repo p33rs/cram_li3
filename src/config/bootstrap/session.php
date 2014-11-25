@@ -18,5 +18,5 @@ $name = basename(LITHIUM_APP_PATH);
 Session::config(array(
 	'default' => array('adapter' => 'Php', 'session.name' => $name)
 ));
-
+Session::write('start', true);
 ?>

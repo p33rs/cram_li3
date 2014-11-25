@@ -20,6 +20,8 @@
 use lithium\core\Libraries;
 use lithium\core\Environment;
 use lithium\action\Dispatcher;
+use lithium\action\Response;
+use lithium\storage\Session;
 
 /**
  * This filter intercepts the `run()` method of the `Dispatcher`, and first passes the `'request'`
@@ -49,6 +51,22 @@ Dispatcher::applyFilter('run', function($self, $params, $chain) {
 		file_exists($file) ? call_user_func(function() use ($file) { include $file; }) : null;
 	}
 	return $chain->next($self, $params, $chain);
+});
+
+Dispatcher::applyFilter('_callable', function($self, $params, $chain) {
+    $ctrl    = $chain->next($self, $params, $chain);
+    $request = isset($params['request']) ? $params['request'] : null;
+    $action  = $params['params']['action'];
+
+    if (Session::read('user')) {
+        return $ctrl;
+    }
+    if (isset($ctrl->publicActions) && in_array($action, $ctrl->publicActions)) {
+        return $ctrl;
+    }
+    return function() use ($request) {
+        return new Response(compact('request') + array('location' => 'Users::land'));
+    };
 });
 
 ?>
