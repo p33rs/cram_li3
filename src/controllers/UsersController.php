@@ -18,37 +18,44 @@ class UsersController extends \lithium\action\Controller {
      * @return array|object
      */
     public function land() {
+        // Static page, for now.
     }
 
     public function login() {
+        $error = false;
         $username = $this->request->get('data:username');
         if (!$username) {
-            return ['error' => 'Please provide a username'];
+            return $this->render(['data' => [
+                'error' => 'You must specify a username.'
+            ]]);
         }
 
         $user = Users::find('first', ['username' => $username]);
         if (!$user) {
-            return ['error' => 'Invalid login.'];
+            return $this->render(['data' => [
+                'error' => 'User not found.'
+            ]]);
         }
 
         $salt = $user->salt;
         $hashed = Users::hash($this->request->get('data:password'), $salt);
         if ($hashed === $user->password) {
             Session::write('user', $user->id);
-            $this->redirect('Users::home');
+            return $this->render(['data' => [
+                'success' => true
+            ]]);
         } else {
-            return ['error' => 'Invalid login.'];
+            return $this->render(['data' => [
+                'error' => 'Invalid password.'
+            ]]);
         }
-    }
-
-    public function home() {
-
     }
 
     public function register() {
         $errors = [];
         $fields = ['username', 'firstname', 'lastname', 'email'];
         $user = Users::create();
+
         foreach ($fields as $field) {
             $user->$field = $this->request->get('data:' . $field);
         }
@@ -63,6 +70,16 @@ class UsersController extends \lithium\action\Controller {
         $salt = Users::salt();
         $user->password = Users::hash($password, $salt);
         $user->salt = $salt;
+        if (!$errors) {
+            $user->save();
+        }
+        $errors += $user->errors();
+        return $this->render([
+            'data' => [
+                'errors' => $errors,
+                'success' => !$errors
+            ]
+        ]);
     }
 
     public function logout() {
@@ -71,20 +88,19 @@ class UsersController extends \lithium\action\Controller {
     }
 
     public function account() {
-
+        $values = [];
+        $errors = [];
+        // if data,
+        //   currentData = form data
+        //   attempt the save
+        // else,
+        //   currentData = users::find()
+        return $this->render([
+            'data' => [
+                'values' => $values,
+                'errors' => $errors,
+            ]
+        ]);
     }
-
-    /**
-     * @return bool|null True if logged in; False if logged in and cleared; Null if not logged in
-     */
-    private function checkLogin() {
-        $loggedIn = Session::read('timestamp');
-        if (!$loggedIn) {
-            return null;
-        }
-        return $loggedIn - time() < self::MAX_SESSION_AGE;
-    }
-
-
 
 }

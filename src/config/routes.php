@@ -19,16 +19,16 @@
 use lithium\net\http\Router;
 use lithium\core\Environment;
 
-Router::connect('/', 'Users::land');
-Router::connect('/register', 'Users::register');
-Router::connect('/login', 'Users::login');
-Router::connect('/logout', 'Users::logout');
-Router::connect('/account', 'Users::account');
+Router::connect('/', ['controller' => 'Users', 'action' => 'land']);
+Router::connect('/register', ['controller' => 'Users', 'action' => 'register', 'type' => 'json']);
+Router::connect('/login', ['controller' => 'Users', 'action' => 'login', 'type' => 'json']);
+Router::connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+Router::connect('/account', ['controller' => 'Users', 'action' => 'account']);
 
-Router::connect('/home', 'Photos::index');
-Router::connect('/user/{:id}', 'Photos::index');
-Router::connect('/photo/upload', 'Photos::add');
-Router::connect('/photo/delete', 'Photos::delete');
-Router::connect('/photo/{:id}', 'Photos::view');
+Router::connect('/home', ['controller' => 'Photos', 'action' => 'index']);
+Router::connect('/user/{:id}', ['controller' => 'Photos', 'action' => 'index']);
+Router::connect('/photo/upload', ['controller' => 'Photos', 'action' => 'add']);
+Router::connect('/photo/delete', ['controller' => 'Photos', 'action' => 'delete', 'type' => 'json']);
+Router::connect('/photo/{:id}', ['controller' => 'Photos', 'action' => 'view']);
 
 ?>
